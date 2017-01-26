@@ -12,3 +12,15 @@ function resize() {
 }
 
 resize();
+
+let resizing = false;
+function delayedResize() {
+    if (!resizing) {
+        animationFrameId = requestAnimationFrame(() => {
+            resize();
+            resizing = false;
+        });
+    }
+}
+
+window.addEventListener('resize', delayedResize, false);
