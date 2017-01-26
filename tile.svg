@@ -7,7 +7,7 @@
     <clipPath id="inner-hex">
       <use href="#hexagon" transform="scale(0.95)" />
     </clipPath>
-    <polygon points="0 0, 0 80, 34 100, -10 100" id="flag" fill="#DA291C" />
+    <polygon points="0 0, 0 80, 34.6 100, -10 100" id="flag" fill="#DA291C" />
   </defs>
   <g clip-path="url(#inner-hex)">
     <use x="0" y="0" href="#flag" />
