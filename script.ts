@@ -1,14 +1,41 @@
-// vector in acial coordinates
+// vector in axial coordinates
 // this can be either a displacement or a position vector
-interface Vector {
-    x: Number
-    y: Number
+interface HexVector {
+    hx: Number
+    hy: Number
+}
+
+class Map2D<Key1, Key2, Value> {
+    map: Map<Key1, Map<Key2, Value>>
+
+    get(key1: Key1, key2: Key2): Value {
+        if (this.map.has(key1)) {
+            return this.map.get(key1).get(key2)
+        }
+    }
+
+    set(key1: Key1, key2: Key2, value: Value) {
+        if (!this.map.has(key1)) {
+            this.map.set(key1, new Map())
+        }
+        this.map.get(key1).set(key2, value)
+    }
+}
+
+interface RectVector {
+    rx: Number
+    ry: Number
 }
 
 interface Tile {
     chilarity: Boolean
     rotation: Number
-    neighbors: Map<Vector, Tile>
+    position: HexVector
+    neighbors: Map<HexVector, Tile>
+}
+
+function hexToRect(hexPos: HexVector, hexWidth: Number, hexHeight: Number): RectVector {
+    return {rx: 0, ry: 0}
 }
 
 const $plane = document.getElementById('plane');
