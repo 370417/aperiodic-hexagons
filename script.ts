@@ -1,42 +1,53 @@
-// vector in axial coordinates
-// this can be either a displacement or a position vector
-interface HexVector {
-    hx: Number
-    hy: Number
-}
+class Graph {
+    map: Map<number, Map<number, Tile>>
 
-class Map2D<Key1, Key2, Value> {
-    map: Map<Key1, Map<Key2, Value>>
-
-    get(key1: Key1, key2: Key2): Value {
-        if (this.map.has(key1)) {
-            return this.map.get(key1).get(key2)
+    get(pos: {x: number, y: number}): Tile {
+        if (this.map.has(pos.x)) {
+            return this.map.get(pos.x).get(pos.y)
         }
     }
 
-    set(key1: Key1, key2: Key2, value: Value) {
-        if (!this.map.has(key1)) {
-            this.map.set(key1, new Map())
+    set(x: number, y: number, tile: Tile) {
+        if (!this.map.has(x)) {
+            this.map.set(x, new Map())
         }
-        this.map.get(key1).set(key2, value)
+        this.map.get(x).set(y, tile)
     }
-}
-
-interface RectVector {
-    rx: Number
-    ry: Number
 }
 
 interface Tile {
-    chilarity: Boolean
-    rotation: Number
-    position: HexVector
-    neighbors: Map<HexVector, Tile>
+    chilarity: boolean
+    rotation: number
+    x: number
+    y: number
+    neighbors: Map<Directions, Tile>
 }
 
-function hexToRect(hexPos: HexVector, hexWidth: Number, hexHeight: Number): RectVector {
-    return {rx: 0, ry: 0}
+function hexToRect(hx: number, hy: number, hexWidth: number, hexHeight: number): {x: number, y: number} {
+    const rx = 0
+    const ry = 0
+    return {x: rx, y: ry}
 }
+
+const enum Directions {
+    a,
+    b,
+    c,
+    d,
+    e,
+    f,
+}
+
+const centerTile: Tile = {
+    chilarity: false,
+    rotation: 0,
+    x: 0,
+    y: 0,
+    neighbors: new Map(),
+}
+centerTile.neighbors.set(Directions.Left, null)
+
+const graph = new Graph()
 
 const $plane = document.getElementById('plane');
 
