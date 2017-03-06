@@ -45,7 +45,7 @@ const centerTile: Tile = {
     y: 0,
     neighbors: new Map(),
 }
-centerTile.neighbors.set(Directions.Left, null)
+//centerTile.neighbors.set(Directions.Left, null)
 
 const graph = new Graph()
 

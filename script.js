@@ -23,7 +23,7 @@ const centerTile = {
     y: 0,
     neighbors: new Map(),
 };
-centerTile.neighbors.set(Directions.Left, null);
+//centerTile.neighbors.set(Directions.Left, null)
 const graph = new Graph();
 const $plane = document.getElementById('plane');
 // Each hexagon can be replaced with two horizontally adjacent
