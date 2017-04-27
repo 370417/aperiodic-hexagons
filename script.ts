@@ -1,97 +1,66 @@
-class Graph {
-    map: Map<number, Map<number, Tile>>
+/*
 
-    get(pos: {x: number, y: number}): Tile {
-        if (this.map.has(pos.x)) {
-            return this.map.get(pos.x).get(pos.y)
-        }
-    }
+Algorithm outline
 
-    set(x: number, y: number, tile: Tile) {
-        if (!this.map.has(x)) {
-            this.map.set(x, new Map())
-        }
-        this.map.get(x).set(y, tile)
-    }
+Assign ring orientations to tiles at every other unvisited row and column.
+Row orientation is determined by tile location:
+ - intersection (z)
+ - row (x)
+ - column (y)
+
+Go through every just processed row, column, and z-column, and assign alternating lines to connecting tiles.
+
+Repeat with twice the scale
+
+0, 2,  4,  6,  8    1,  3,  5,  7,  9
+0, 4,  8, 12, 16    2,  6,  10, 14, 18
+0, 8, 16, 24, 32    4, 12, 20, 28, 36
+                    8, 24, 40, ...
+
+*/
+
+enum Ring {
+    x,
+    y,
+    xy,
 }
 
 interface Tile {
-    chilarity: boolean
-    rotation: number
-    x: number
-    y: number
-    neighbors: Map<Directions, Tile>
+    ring: Ring,
 }
 
-function hexToRect(hx: number, hy: number, hexWidth: number, hexHeight: number): {x: number, y: number} {
-    const rx = 0
-    const ry = 0
-    return {x: rx, y: ry}
+type Plane = Tile[][];
+
+function createPlane(width: number, height: number): Plane {
+    const plane = []
+    for (let y = 0; y < height; y++) {
+        plane[y] = []
+        for (let x = 0; x < width; x++) {
+            plane[y][x] = []
+        }
+    }
+    return plane
 }
 
-const enum Directions {
-    a,
-    b,
-    c,
-    d,
-    e,
-    f,
-}
-
-const centerTile: Tile = {
-    chilarity: false,
-    rotation: 0,
-    x: 0,
-    y: 0,
-    neighbors: new Map(),
-}
-//centerTile.neighbors.set(Directions.Left, null)
-
-const graph = new Graph()
-
-const $plane = document.getElementById('plane');
-
-// Each hexagon can be replaced with two horizontally adjacent
-// rectangles to convert the hexagonal tiling to a rectangular one
-// dimensions of rectangular tiles in pixels
-let rectWidth = 86.6;
-let rectHeight = 150;
-
-// size of rectangular tiling
-let width = 2;
-let height = 1;
-
-// each value of plane is a map of rows
-let plane = new Map();
-plane.set(0, new Map());
-// finish initializing plane with the origin tile
-
-function resize() {
-    const pxWidth = window.innerWidth;
-    const pxHeight = window.innerHeight;
-
-    const viewBox = [-pxWidth, -pxHeight, 2 * pxWidth, 2 * pxHeight].join(' ');
-
-    $plane.setAttribute('width', '' + pxWidth);
-    $plane.setAttribute('height', '' + pxHeight);
-    $plane.setAttribute('viewBox', viewBox);
-
-    while (width * rectWidth < pxWidth) {
-        width += 2;
+function addCorners(plane: Plane) {
+    const height = plane.length;
+    const width = plane[0].length;
+    const maxScale = Math.max(width, height)
+    for (let scale = 1; scale <= maxScale; scale *= 2) {
+        for (let y = scale; y < height; y += 2 * scale) {
+            for (let x = scale; x < width; x += scale) {
+                plane[y][x].ring = Ring.x
+            }
+        }
+        for (let x = scale; x < width; x += 2 * scale) {
+            for (let y = scale; y < height; y += scale) {
+                let tile = plane[y][x]
+                if (tile.ring === Ring.x) {
+                    tile.ring = Ring.xy
+                } else {
+                    tile.ring = Ring.y
+                }
+            }
+        }
     }
 }
-
-resize();
-
-let resizing = false;
-function delayedResize() {
-    if (!resizing) {
-        resizing = true;
-        requestAnimationFrame(() => {
-            resize();
-            resizing = false;
-        });
-    }
-}
-
-window.addEventListener('resize', delayedResize, false);
