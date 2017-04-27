@@ -19,7 +19,11 @@ Repeat with twice the scale
 
 */
 
-enum Ring {
+const $plane = document.getElementById('plane')
+const tileWidth = 173.2
+const tileHeight = 150
+
+const enum Ring {
     x,
     y,
     xy,
@@ -31,6 +35,8 @@ interface Tile {
 
 type Plane = Tile[][];
 
+displayPlane(createPlane(16, 16))
+
 function createPlane(width: number, height: number): Plane {
     const plane = []
     for (let y = 0; y < height; y++) {
@@ -41,6 +47,45 @@ function createPlane(width: number, height: number): Plane {
     }
     return plane
 }
+
+function displayPlane(plane: Plane) {
+    const height = plane.length;
+    const width = plane[0].length;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const dx = x * tileWidth + y * tileWidth / 2
+            const dy = y * tileHeight
+            const use = document.createElementNS('http://www.w3.org/2000/svg','use')
+            use.setAttribute('href', '#tile')
+            use.setAttribute('transform', `translate(${dx},${dy})`)
+            $plane.appendChild(use)
+        }
+    }
+}
+
+function resize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    $plane.setAttribute('width', '' + width);
+    $plane.setAttribute('height', '' + height);
+    $plane.setAttribute('viewBox', `-${width} -${height} ${2 * width} ${2 * height}`);
+}
+
+resize();
+
+let resizing = false;
+function delayedResize() {
+    if (!resizing) {
+        resizing = true;
+        requestAnimationFrame(() => {
+            resize();
+            resizing = false;
+        });
+    }
+}
+
+window.addEventListener('resize', delayedResize, false);
 
 function addCorners(plane: Plane) {
     const height = plane.length;
