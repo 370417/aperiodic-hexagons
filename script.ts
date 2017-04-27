@@ -17,6 +17,14 @@ Repeat with twice the scale
 0, 8, 16, 24, 32    4, 12, 20, 28, 36
                     8, 24, 40, ...
 
+1 + 2n
+2 + 4n
+...
+
+
+For every n in N+ there exists a set {n + 2nx : x in Z}
+                                     {n(1+2x) : x in Z}
+
 */
 
 const $plane = document.getElementById('plane')
@@ -35,7 +43,9 @@ interface Tile {
 
 type Plane = Tile[][];
 
-displayPlane(createPlane(16, 16))
+const pane = createPlane(16, 16)
+addCorners(pane)
+displayPlane(pane)
 
 function createPlane(width: number, height: number): Plane {
     const plane = []
@@ -55,10 +65,21 @@ function displayPlane(plane: Plane) {
         for (let x = 0; x < width; x++) {
             const dx = x * tileWidth + y * tileWidth / 2
             const dy = y * tileHeight
-            const use = document.createElementNS('http://www.w3.org/2000/svg','use')
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use')
+
+            const tile = plane[y][x]
+            let angle
+            if (tile.ring === Ring.x) {
+                angle = 60
+            } else if (tile.ring === Ring.y) {
+                angle = 0
+            } else {
+                angle = 120
+            }
+
             use.setAttribute('href', '#tile')
-            use.setAttribute('transform', `translate(${dx},${dy})`)
-            $plane.appendChild(use)
+            use.setAttribute('transform', `translate(${dx},${dy}) rotate(${angle})`)
+            if (tile.ring !== undefined) $plane.appendChild(use)
         }
     }
 }
@@ -69,7 +90,7 @@ function resize() {
 
     $plane.setAttribute('width', '' + width);
     $plane.setAttribute('height', '' + height);
-    $plane.setAttribute('viewBox', `-${width} -${height} ${2 * width} ${2 * height}`);
+    $plane.setAttribute('viewBox', `0 0 ${4 * width} ${4 * height}`);
 }
 
 resize();
@@ -107,5 +128,6 @@ function addCorners(plane: Plane) {
                 }
             }
         }
+        // scale = 500
     }
 }

@@ -21,7 +21,9 @@ Repeat with twice the scale
 const $plane = document.getElementById('plane');
 const tileWidth = 173.2;
 const tileHeight = 150;
-displayPlane(createPlane(16, 16));
+const pane = createPlane(16, 16);
+addCorners(pane);
+displayPlane(pane);
 function createPlane(width, height) {
     const plane = [];
     for (let y = 0; y < height; y++) {
@@ -40,9 +42,21 @@ function displayPlane(plane) {
             const dx = x * tileWidth + y * tileWidth / 2;
             const dy = y * tileHeight;
             const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            const tile = plane[y][x];
+            let angle;
+            if (tile.ring === 0 /* x */) {
+                angle = 60;
+            }
+            else if (tile.ring === 1 /* y */) {
+                angle = 0;
+            }
+            else {
+                angle = 120;
+            }
             use.setAttribute('href', '#tile');
-            use.setAttribute('transform', `translate(${dx},${dy})`);
-            $plane.appendChild(use);
+            use.setAttribute('transform', `translate(${dx},${dy}) rotate(${angle})`);
+            if (tile.ring !== undefined)
+                $plane.appendChild(use);
         }
     }
 }
@@ -51,7 +65,7 @@ function resize() {
     const height = window.innerHeight;
     $plane.setAttribute('width', '' + width);
     $plane.setAttribute('height', '' + height);
-    $plane.setAttribute('viewBox', `-${width} -${height} ${2 * width} ${2 * height}`);
+    $plane.setAttribute('viewBox', `0 0 ${4 * width} ${4 * height}`);
 }
 resize();
 let resizing = false;
@@ -86,5 +100,6 @@ function addCorners(plane) {
                 }
             }
         }
+        // scale = 500
     }
 }
