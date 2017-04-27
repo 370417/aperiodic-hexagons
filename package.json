@@ -1,0 +1,24 @@
+{
+  "name": "aperiodic-hexagons",
+  "version": "0.1.0",
+  "description": "Infinite aperiodic hexagonal tiling of the plane",
+  "main": "script.js",
+  "dependencies": {
+    "typescript": "^2.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/as-f/aperiodic-hexagons.git"
+  },
+  "author": "as-f",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/as-f/aperiodic-hexagons/issues"
+  },
+  "homepage": "https://github.com/as-f/aperiodic-hexagons#readme"
+}
