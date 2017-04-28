@@ -22,8 +22,15 @@ Repeat with twice the scale
 ...
 
 
-For every n in N+ there exists a set {n + 2nx : x in Z}
-                                     {n(1+2x) : x in Z}
+For every n in N+ there exists a set {n + 2nk : k in Z}
+                                     {n(1+2k) : k in Z}
+
+Consider the tile @ (x, y, z) : z = -x - y.
+Let n in N+, k in Z so that x = n(1+2k)
+Let m in N+, l in Z so that y = m(1+2l)
+Then z = -n(1+2k) - m(1+2l)
+       = -nm(1+2k)/m - nm(1+2l)/n
+       = -nm((1+2k)m + (1+2l)/n)
 
 */
 
@@ -39,13 +46,15 @@ const enum Ring {
 
 interface Tile {
     ring: Ring,
+    chirality: boolean,
 }
 
 type Plane = Tile[][];
 
-const pane = createPlane(16, 16)
-addCorners(pane)
-displayPlane(pane)
+const plane = createPlane(16, 16)
+// addCorners(pane)
+cht(plane)
+displayPlane(plane)
 
 function createPlane(width: number, height: number): Plane {
     const plane = []
@@ -76,10 +85,11 @@ function displayPlane(plane: Plane) {
             } else {
                 angle = 120
             }
+            let scale = tile.chirality ? 1 : -1
 
             use.setAttribute('href', '#tile')
-            use.setAttribute('transform', `translate(${dx},${dy}) rotate(${angle})`)
-            if (tile.ring !== undefined) $plane.appendChild(use)
+            use.setAttribute('transform', `translate(${dx},${dy}) rotate(${angle}) scale(1,${scale})`)
+            $plane.appendChild(use)
         }
     }
 }
@@ -131,3 +141,47 @@ function addCorners(plane: Plane) {
         // scale = 500
     }
 }
+
+function cht(plane: Plane) {
+    const height = plane.length;
+    const width = plane[0].length;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            plane[y][x] = createTile(x, y)
+        }
+    }
+}
+
+function createTile(x: number, y: number): Tile {
+    if (x === 0 && y === 0) {
+        return { ring: Ring.y, chirality: false }
+    }
+    if (x == 0) {
+        return { ring: Ring.x, chirality: false }
+    }
+    if (y == 0) {
+        return { ring: Ring.y, chirality: false }
+    }
+    if (x == -y) {
+        return { ring: Ring.xy, chirality: false }
+    }
+    const xScale = calcScale(Math.abs(x))
+    const yScale = calcScale(Math.abs(y))
+    if (xScale > yScale) {
+        return { ring: Ring.x, chirality: Math.abs(y) % (2 * xScale) > xScale }
+    } else if (yScale > xScale) {
+        return { ring: Ring.y, chirality: Math.abs(x) % (2 * yScale) < yScale }
+    } else {
+        const zScale = calcScale(Math.abs(x + y))
+        return { ring: Ring.xy, chirality: Math.abs(x) % (2 * zScale) < zScale }
+    }
+}
+
+function calcScale(coord: number): number {
+    if (coord % 2 === 1) {
+        return 1
+    } else {
+        return 2 * calcScale(coord / 2)
+    }
+}
+
